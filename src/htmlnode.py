@@ -15,4 +15,4 @@ class HTMLNode:
         return " ".join([f"{k}={v}" for k, v in self.props.items()])
     
     def __repr__(self):
-        return f"tag: {self.tag}, value: {self.value}, children: {self.children}, props: {self.props}"
+        return f"HTMLNode(tag: {self.tag}, value: {self.value}, children: {self.children}, props: {self.props})"
