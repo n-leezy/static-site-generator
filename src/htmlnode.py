@@ -1,4 +1,5 @@
 from __future__ import annotations # Needed for type hinting in Python 3.10
+from textnode import TextNode, TextType
 
 # This is a base class for all HTML nodes.
 class HTMLNode:
@@ -31,6 +32,9 @@ class LeafNode(HTMLNode):
             return self.value
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
     
+    def __eq__(self, other):
+        return self.value == other.value and self.tag == other.tag and self.props == other.props
+    
     def __repr__(self):
         return f"LeafNode(value: {self.value}, tag: {self.tag}, props: {self.props})"
 
@@ -46,5 +50,25 @@ class ParentNode(HTMLNode):
             raise ValueError("Children are required for parent nodes")
         return f"<{self.tag}{self.props_to_html()}>{''.join([child.to_html() for child in self.children])}</{self.tag}>"
     
+    def __eq__(self, other):
+        return self.tag == other.tag and self.children == other.children and self.props == other.props
+    
     def __repr__(self):
         return f"ParentNode(tag: {self.tag}, children: {self.children}, props: {self.props})"
+    
+def text_node_to_html_node(text_node: TextNode):
+    match text_node.text_type:
+        case TextType.TEXT:
+            return LeafNode(text_node.text)
+        case TextType.BOLD:
+            return LeafNode(text_node.text, tag="b")
+        case TextType.ITALIC:
+            return LeafNode(text_node.text, tag="i")
+        case TextType.CODE:
+            return LeafNode(text_node.text, tag="code")
+        case TextType.LINK:
+            return LeafNode(text_node.text, tag="a", props={"href": text_node.url})
+        case TextType.IMAGE:
+            return LeafNode("", tag="img", props={"src": text_node.url, "alt": text_node.text})
+        case _:
+            raise ValueError(f"Invalid text node type: {text_node.text_type}")
