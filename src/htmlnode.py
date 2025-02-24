@@ -55,7 +55,8 @@ class ParentNode(HTMLNode):
     
     def __repr__(self):
         return f"ParentNode(tag: {self.tag}, children: {self.children}, props: {self.props})"
-    
+
+# This function converts a text node to an HTML node
 def text_node_to_html_node(text_node: TextNode):
     match text_node.text_type:
         case TextType.TEXT:
