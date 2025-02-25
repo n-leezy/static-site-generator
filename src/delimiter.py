@@ -13,16 +13,19 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimeter: str, text_type: 
             new_nodes.append(node) 
         else:  
             # If the node is a text node, split it into new text nodes based on the delimeter
-            text = node.text
-            split_lines = text.split(delimeter)
-            if len(split_lines) == 1:
-                raise ValueError("No delimiter found")
-            if len(split_lines) == 2:
-                raise ValueError("Matching closed delimiter not found")
-            # add the first TextType.TEXT node to the new nodes
-            new_nodes.append(TextNode(split_lines[0], text_type.TEXT))
-            # add the node specified by the delimeter to the new nodes
-            new_nodes.append(TextNode(split_lines[1], text_type))
-            # add the third TextType.TEXT node to the new nodes
-            new_nodes.append(TextNode(split_lines[2], text_type.TEXT))
+            split_nodes = []
+            sections = node.text.split(delimeter)
+            if len(sections) % 2 == 0:
+                raise ValueError("invalid Markdown, formatted section not closed")
+            for i in range(len(sections)):
+                # Skip empty sections
+                if sections[i] == "":
+                    continue
+                # Add text nodes for even sections
+                if i % 2 == 0:
+                    split_nodes.append(TextNode(sections[i], text_type.TEXT))
+                # Add nodes specified by the delimeter for odd sections
+                else:
+                    split_nodes.append(TextNode(sections[i], text_type))
+            new_nodes.extend(split_nodes)
     return new_nodes
