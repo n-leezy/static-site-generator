@@ -48,3 +48,12 @@ def extract_markdown_links(text: str):
     for alt_text, url in matches:
         markdown_links.append((alt_text, url))
     return markdown_links
+
+
+# TODO: Implement this
+def split_nodes_images(old_nodes: list[TextNode]):
+    pass
+
+# TODO: Implement this
+def split_nodes_links(old_nodes: list[TextNode]):
+    pass
