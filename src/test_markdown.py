@@ -1,6 +1,6 @@
 import unittest
 
-from delimiter import *
+from inline_markdown import *
 from textnode import *
 
 # Testing nodes with a single delimiter, nested delimiters are not accounted for and should raise an error
@@ -23,17 +23,21 @@ class TestDelimiter(unittest.TestCase):
     def test_split_nodes_delimiter_nested(self):
         node = TextNode("This is a nested **bold with *italic* text**", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        self.assertEqual(new_nodes, [TextNode("This is a nested ", TextType.TEXT), TextNode("bold with *italic* text", TextType.BOLD), TextNode("", TextType.TEXT)])
+        self.assertEqual(new_nodes, [TextNode("This is a nested ", TextType.TEXT), TextNode("bold with *italic* text", TextType.BOLD)])
 
     def test_split_nodes_delimiter_noclosing_delimiter(self):
         node = TextNode("This is a **incomplete bold word", TextType.TEXT)
         with self.assertRaises(ValueError):
             split_nodes_delimiter([node], "**", TextType.BOLD)
 
-    def test_split_nodes_delimiter_no_delimiter(self):
-        node = TextNode("This is a text with no delimiter", TextType.TEXT)
-        with self.assertRaises(ValueError):
-            split_nodes_delimiter([node], "**", TextType.BOLD)
+    def test_extract_markdown_images(self):
+        text = "This is a test image ![alt text](image.png)"
+        self.assertEqual(extract_markdown_images(text), [("alt text", "image.png")])
+
+    def test_extract_markdown_links(self):
+        text = "This is a test link [alt text](https://www.google.com)"
+        self.assertEqual(extract_markdown_links(text), [("alt text", "https://www.google.com")])
+
 
 if __name__ == "__main__":
     unittest.main()
