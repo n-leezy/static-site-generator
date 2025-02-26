@@ -3,8 +3,7 @@ import unittest
 from inline_markdown import *
 from textnode import *
 
-# Testing nodes with a single delimiter, nested delimiters are not accounted for and should raise an error
-class TestDelimiter(unittest.TestCase):
+class TestInlineMarkdown(unittest.TestCase):
     def test_split_nodes_delimiter_code(self):
         node = TextNode("This is text with a 'code block' word", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "'", TextType.CODE)
@@ -30,6 +29,11 @@ class TestDelimiter(unittest.TestCase):
         with self.assertRaises(ValueError):
             split_nodes_delimiter([node], "**", TextType.BOLD)
 
+    def test_split_nodes_delimiter_all_bold(self):
+        node = TextNode("This is all bold", TextType.BOLD)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(new_nodes, [TextNode("This is all bold", TextType.BOLD)])
+
     def test_extract_markdown_images(self):
         text = "This is a test image ![alt text](image.png)"
         self.assertEqual(extract_markdown_images(text), [("alt text", "image.png")])
@@ -38,6 +42,41 @@ class TestDelimiter(unittest.TestCase):
         text = "This is a test link [alt text](https://www.google.com)"
         self.assertEqual(extract_markdown_links(text), [("alt text", "https://www.google.com")])
 
+    def test_split_nodes_images(self):
+        node = TextNode("This is a test image ![alt text](image.png)", TextType.TEXT)
+        new_nodes = split_nodes_images([node])
+        self.assertEqual(new_nodes, [TextNode("This is a test image ", TextType.TEXT), TextNode("alt text", TextType.IMAGE, "image.png")])
 
+    def test_split_nodes_links(self):
+        node = TextNode("This is a test link [alt text](https://www.google.com)", TextType.TEXT)
+        new_nodes = split_nodes_links([node])
+        self.assertEqual(new_nodes, [TextNode("This is a test link ", TextType.TEXT), TextNode("alt text", TextType.LINK, "https://www.google.com")])
+
+    def test_split_nodes_images_no_images(self):
+        node = TextNode("This is a test text", TextType.TEXT)
+        new_nodes = split_nodes_images([node])
+        self.assertEqual(new_nodes, [node])
+
+    def test_split_nodes_links_no_links(self):
+        node = TextNode("This is a test text", TextType.TEXT)
+        new_nodes = split_nodes_links([node])
+        self.assertEqual(new_nodes, [node])
+
+    def test_split_nodes_images_multiple_images(self):
+        node = TextNode("This is a test image ![alt text](image.png) and another image ![alt text](image2.png)", TextType.TEXT)
+        new_nodes = split_nodes_images([node])
+        self.assertEqual(new_nodes, [TextNode("This is a test image ", TextType.TEXT), TextNode("alt text", TextType.IMAGE, "image.png"), TextNode(" and another image ", TextType.TEXT), TextNode("alt text", TextType.IMAGE, "image2.png")])
+
+    def test_split_nodes_links_multiple_links(self):
+        node = TextNode("This is a test link [alt text](https://www.google.com) and another link [alt text](https://www.yahoo.com)", TextType.TEXT)
+        new_nodes = split_nodes_links([node])
+        self.assertEqual(new_nodes, [TextNode("This is a test link ", TextType.TEXT), TextNode("alt text", TextType.LINK, "https://www.google.com"), TextNode(" and another link ", TextType.TEXT), TextNode("alt text", TextType.LINK, "https://www.yahoo.com")])
+
+    def test_split_nodes_images_only_bold_text(self):
+        node = TextNode("This is all bold", TextType.BOLD)
+        new_nodes = split_nodes_images([node])
+        self.assertEqual(new_nodes, [node])
+
+    
 if __name__ == "__main__":
     unittest.main()
