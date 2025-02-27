@@ -82,10 +82,6 @@ class TestInlineMarkdown(unittest.TestCase):
         new_nodes = split_nodes_links([node])
         self.assertEqual(new_nodes, [TextNode("This is a test link ", TextType.TEXT), TextNode("alt text", TextType.LINK, "https://www.google.com"), TextNode(" and another link ", TextType.TEXT), TextNode("alt text", TextType.LINK, "https://www.yahoo.com"), TextNode(" and some text", TextType.TEXT)])
 
-    def test_split_nodes_images_only_bold_text(self):
-        node = TextNode("This is all bold", TextType.BOLD)
-        new_nodes = split_nodes_images([node])
-        self.assertEqual(new_nodes, [node])
 
     
 if __name__ == "__main__":

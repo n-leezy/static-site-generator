@@ -125,3 +125,7 @@ def split_nodes_links(old_nodes: list[TextNode]):
             if text_to_split != "":
                 new_nodes.append(TextNode(text_to_split, TextType.TEXT))
     return new_nodes
+
+# Function that converts a raw string of markdown-flavored text into a list of TextNodes
+def text_to_nodes(text: str):
+    new_nodes = []
