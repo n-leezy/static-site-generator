@@ -127,12 +127,17 @@ def split_nodes_links(old_nodes: list[TextNode]):
     return new_nodes
 
 # Function that converts a raw string of markdown-flavored text into a list of TextNodes
-# TODO: Fix this
 def text_to_nodes(text: str):
+    # Create initial text node
     node = TextNode(text, TextType.TEXT)
+    # Process bold text (surrounded by **)
     nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+    # Process italic text (surrounded by * or _)
     nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    # Process code blocks (surrounded by `)
     nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    # Process images and links
     nodes = split_nodes_images(nodes)
     nodes = split_nodes_links(nodes)
     return nodes
