@@ -8,16 +8,21 @@ from blocknode import *
 
 # Function that takes a raw markdown string as input and returns a list of "block" strings
 def markdown_to_blocks(text: str):
-    blocks = []
-    # Split the text into blocks
-    blocks = re.split(r"\n\n", text)
-    # Iterate through the blocks and remove empty blocks and trim whitespace
+    # First, strip leading and trailing whitespace from the entire text
+    text = text.strip()
+    
+    # Use a more robust regex to split blocks by one or more blank lines
+    # This will match any sequence of whitespace that includes at least two newlines
+    blocks = re.split(r'\n\s*\n', text)
+    
+    # Create a new list to store non-empty blocks with whitespace trimmed
+    result = []
     for block in blocks:
-        if block == "":
-            blocks.remove(block)
-        else:
-            blocks[blocks.index(block)] = block.strip(" ")
-    return blocks
+        # Only add non-empty blocks after stripping whitespace
+        stripped_block = block.strip()
+        if stripped_block:
+            result.append(stripped_block)
+    return result
 
 
 # Function that takes a single block of markdown text as input and returns the BlockType
@@ -75,6 +80,10 @@ def markdown_to_html_node(text: str):
                 # Create a heading HTML node
                 children.append(ParentNode(f"h{heading_level}", text_to_children(heading_text)))
             case BlockType.PARAGRAPH:
+                # Replace the newlines with a space and normalize whitespace
+                block = block.replace("\n", " ")
+                # Normalize whitespace by replacing multiple spaces with a single space
+                block = re.sub(r'\s+', ' ', block).strip()
                 children.append(ParentNode("p", text_to_children(block)))
             case BlockType.QUOTE:
                 children.append(ParentNode("blockquote", text_to_children(block)))
@@ -101,10 +110,19 @@ def markdown_to_html_node(text: str):
             case BlockType.CODE:
                 # Get the code block
                 code_block = block.split("```")[1]
+                # Strip leading whitespace from each line
+                lines = code_block.strip().split("\n")
+                # Remove common leading whitespace from all lines
+                stripped_lines = []
+                for line in lines:
+                    stripped_lines.append(line.strip())
+                # Join the lines with newlines and add a trailing newline
+                code_block = "\n".join(stripped_lines) + "\n"
                 # Manually create the TextNode for the code block
                 code_node = TextNode(code_block, TextType.CODE)
-                # Convert the TextNode to an HTML node
-                children.append(ParentNode("pre",text_node_to_html_node(code_node)))
+                # Convert the TextNode to an HTML node and wrap it in a list
+                html_node = text_node_to_html_node(code_node)
+                children.append(ParentNode("pre", [html_node]))
             case _:
                 raise ValueError(f"Invalid block type: {block_type}")
     return ParentNode("div", children)
