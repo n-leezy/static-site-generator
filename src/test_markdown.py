@@ -100,7 +100,32 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode("link", TextType.LINK, "https://boot.dev"),
             ]
         )
+
+    def test_text_to_nodes_two_bold_words(self):
+        text = "This is **bold** and **bold2**"
+        nodes = text_to_nodes(text)
+        self.assertEqual(nodes, [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("bold2", TextType.BOLD),
+        ])
+
+    def test_text_to_nodes_other_test(self):
+        text = "This is a _test_ with a `code block` and an ![image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = text_to_nodes(text)
+        self.assertEqual(nodes, [
+            TextNode("This is a ", TextType.TEXT),
+            TextNode("test", TextType.ITALIC),
+            TextNode(" with a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ])
     
+    #TODO: Add more tests for text_to_nodes
 
     
 if __name__ == "__main__":
