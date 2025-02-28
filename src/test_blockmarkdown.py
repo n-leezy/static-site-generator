@@ -67,5 +67,13 @@ This is another paragraph"""
             ],
         )
 
+    def test_block_to_block_type(self):
+        self.assertEqual(block_to_block_type("This is a paragraph"), BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("- This is a list\n- with items"), BlockType.UNORDERED_LIST)
+        self.assertEqual(block_to_block_type("1. This is a list\n2. with items"), BlockType.ORDERED_LIST)
+        self.assertEqual(block_to_block_type("```python\nprint(\"Hello, world!\")\n```"), BlockType.CODE)
+        self.assertEqual(block_to_block_type("> This is a quote"), BlockType.QUOTE)
+        
+
 if __name__ == "__main__":
     unittest.main()
