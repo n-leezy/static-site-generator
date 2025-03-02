@@ -40,3 +40,36 @@ def extract_title(markdown_file: str):
         if line.startswith("# "):
             return line.split(" ", 1)[1].strip()
     raise Exception("No title found in markdown file: " + markdown_file)
+
+# Function that generates a webpage given a source path, template path, and destination path
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    source = ""
+    template = ""
+    # Read the source and template files
+    with open(from_path, "r") as f:
+        source = f.read()
+    with open(template_path, "r") as f:
+        template = f.read()
+    
+    # Get the HTML content
+    content = markdown_to_html_node(source)
+    # Get the header
+    title = extract_title(from_path)
+
+    # Replace the {{Title}} and {{Content}} placeholders in template.html
+    template = template.replace("{{ Title }}", title)
+    template = template.replace("{{Content}}", content.to_html())
+
+    # Check if the dest_path exists
+    if os.path.exists(dest_path):
+        # Write the HTML to the destination file
+        with open(dest_path, "w") as f:
+            f.write(template)
+    else:
+        # Create the directory
+        os.makedirs(dest_path)
+        # Write the HTML to the destination file
+        with open(dest_path, "w") as f:
+            f.write(template)
+    
