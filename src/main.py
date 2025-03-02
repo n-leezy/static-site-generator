@@ -8,8 +8,8 @@ from generate_website import *
 
 def main():
     
-    header_text = extract_title("src/test.md")
-    print(header_text)
+    copy_static("static", "public")
+    generate_page("content/index.md", "template.html", "public/index.html")
 
 if __name__ == "__main__":
     main()

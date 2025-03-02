@@ -1,8 +1,8 @@
 import os
 import shutil
 
-from block_markdown import markdown_to_blocks, block_to_block_type
-from inline_markdown import split_nodes_images
+from block_markdown import *
+from inline_markdown import *
 from textnode import *
 
 
@@ -59,17 +59,17 @@ def generate_page(from_path, template_path, dest_path):
 
     # Replace the {{Title}} and {{Content}} placeholders in template.html
     template = template.replace("{{ Title }}", title)
-    template = template.replace("{{Content}}", content.to_html())
+    template = template.replace("{{ Content }}", content.to_html())
 
-    # Check if the dest_path exists
-    if os.path.exists(dest_path):
-        # Write the HTML to the destination file
-        with open(dest_path, "w") as f:
-            f.write(template)
-    else:
-        # Create the directory
-        os.makedirs(dest_path)
-        # Write the HTML to the destination file
-        with open(dest_path, "w") as f:
-            f.write(template)
+    # Check if the dest_path exists and is a directory - if so, remove it
+    if os.path.isdir(dest_path):
+        os.rmdir(dest_path)  # Remove the directory if it exists
     
+    # Make sure the parent directory exists
+    parent_dir = os.path.dirname(dest_path)
+    if parent_dir and not os.path.exists(parent_dir):
+        os.makedirs(parent_dir)
+        
+    # Write the HTML to the destination file
+    with open(dest_path, "w") as f:
+        f.write(template)
