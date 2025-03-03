@@ -95,7 +95,8 @@ def markdown_to_html_node(text: str):
                 for item in lines:
                     if not item.startswith(">"):
                         raise ValueError("invalid quote block")
-                    list_children.append(item.lstrip(">").strip())
+                list_children = [item.lstrip(">").strip() for item in lines]
+                list_children = [item for item in list_children if item]  # Remove empty strings
                 content = " ".join(list_children)
                 children.append(ParentNode("blockquote", text_to_children(content)))
             case BlockType.UNORDERED_LIST:
