@@ -66,6 +66,7 @@ def block_to_block_type(block: str):
 
 # Function that takes a full markdown document as input and outputs a single parent HTML node
 # The parent HTML node will have child HTML nodes representing the nested elements
+# TODO: Write more tests for this function
 def markdown_to_html_node(text: str):
     blocks = markdown_to_blocks(text)
     children = []
@@ -73,12 +74,16 @@ def markdown_to_html_node(text: str):
         block_type = block_to_block_type(block)
         match block_type:
             case BlockType.HEADING:
-                # Get the heading level
-                heading_level = block.count("#", 0, block.index(" "))
-                # Get the heading text
-                heading_text = block.split("#")[1].strip()
-                # Create a heading HTML node
-                children.append(ParentNode(f"h{heading_level}", text_to_children(heading_text)))
+                level = 0
+                for char in block:
+                    if char == "#":
+                        level += 1
+                    else:
+                        break
+                if level + 1 >= len(block):
+                    raise ValueError(f"invalid heading level: {level}")
+                text = block[level + 1 :]
+                children.append(ParentNode(f"h{level}", text_to_children(text)))
             case BlockType.PARAGRAPH:
                 # Replace the newlines with a space and normalize whitespace
                 block = block.replace("\n", " ")
@@ -94,7 +99,8 @@ def markdown_to_html_node(text: str):
                 # Iterate through the list items and create a list of HTML nodes
                 for list_item in list_items:
                     # Find the inline markdown of the list item
-                    list_children.append(ParentNode("li", text_to_children(list_item)))
+                    text = list_item[2:]
+                    list_children.append(ParentNode("li", text_to_children(text)))
                 # Surround the list items with a ul tag
                 children.append(ParentNode("ul", list_children))
             case BlockType.ORDERED_LIST:
@@ -104,7 +110,8 @@ def markdown_to_html_node(text: str):
                 # Iterate through the list items and create a list of HTML nodes
                 for list_item in list_items:
                     # Find the inline markdown of the list item
-                    list_children.append(ParentNode("li", text_to_children(list_item)))
+                    text = list_item[3:]
+                    list_children.append(ParentNode("li", text_to_children(text)))
                 # Surround the list items with a ol tag
                 children.append(ParentNode("ol", list_children))
             case BlockType.CODE:
