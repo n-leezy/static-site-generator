@@ -66,7 +66,6 @@ def block_to_block_type(block: str):
 
 # Function that takes a full markdown document as input and outputs a single parent HTML node
 # The parent HTML node will have child HTML nodes representing the nested elements
-# TODO: Write more tests for this function
 def markdown_to_html_node(text: str):
     blocks = markdown_to_blocks(text)
     children = []
@@ -88,10 +87,17 @@ def markdown_to_html_node(text: str):
                 # Replace the newlines with a space and normalize whitespace
                 block = block.replace("\n", " ")
                 # Normalize whitespace by replacing multiple spaces with a single space
-                block = re.sub(r'\s+', ' ', block).strip()
+                block = re.sub(r"\s+", " ", block).strip()
                 children.append(ParentNode("p", text_to_children(block)))
             case BlockType.QUOTE:
-                children.append(ParentNode("blockquote", text_to_children(block)))
+                lines = block.split("\n")
+                list_children = []
+                for item in lines:
+                    if not item.startswith(">"):
+                        raise ValueError("invalid quote block")
+                    list_children.append(item.lstrip(">").strip())
+                content = " ".join(list_children)
+                children.append(ParentNode("blockquote", text_to_children(content)))
             case BlockType.UNORDERED_LIST:
                 # Get the unordered list items
                 list_items = block.split("\n")
