@@ -1,5 +1,6 @@
 import os
 import shutil
+import pathlib
 
 from block_markdown import *
 from inline_markdown import *
@@ -73,3 +74,19 @@ def generate_page(from_path, template_path, dest_path):
     # Write the HTML to the destination file
     with open(dest_path, "w") as f:
         f.write(template)
+
+
+# Function that recursively generates the pages from the content directory
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    # Get a list of all files in the content directory
+    files = os.listdir(dir_path_content)
+    # Generate a new .html file for every markdown file found using the template.html
+    for file in files:
+        if file.endswith(".md"):
+            generate_page(os.path.join(dir_path_content, file), template_path, os.path.join(dest_dir_path, file))
+
+    # Get a list of all directories in the content directory
+    directories = [d for d in os.listdir(dir_path_content) if os.path.isdir(os.path.join(dir_path_content, d))]
+    # Generate a new directory for every directory found
+    for directory in directories:
+        generate_pages_recursive(os.path.join(dir_path_content, directory), template_path, os.path.join(dest_dir_path, directory))
