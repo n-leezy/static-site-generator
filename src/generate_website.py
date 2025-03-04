@@ -83,7 +83,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
     # Generate a new .html file for every markdown file found using the template.html
     for file in files:
         if file.endswith(".md"):
-            generate_page(os.path.join(dir_path_content, file), template_path, os.path.join(dest_dir_path, file))
+            generate_page(os.path.join(dir_path_content, file), template_path, os.path.join(dest_dir_path, file).replace(".md", ".html"))
 
     # Get a list of all directories in the content directory
     directories = [d for d in os.listdir(dir_path_content) if os.path.isdir(os.path.join(dir_path_content, d))]
