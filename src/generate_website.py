@@ -62,14 +62,16 @@ def generate_page(from_path, template_path, dest_path, basepath):
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", content.to_html())
 
-    # Strip the leading slash from the basepath if it exists
-    clean_basepath = basepath[1:] if basepath.startswith('/') else basepath
+    # Ensure basepath ends with a slash but doesn't have a leading slash
+    clean_basepath = basepath.strip("/")
+    if clean_basepath:
+        clean_basepath += "/"
 
     # Replace links and image sources
-    template = template.replace('href="/', f'href="{clean_basepath}')
-    template = template.replace('src="/', f'src="{clean_basepath}')
-    template = template.replace('href=/', f'href={clean_basepath}')
-    template = template.replace('src=/', f'src={clean_basepath}')
+    template = template.replace('href="/', f'href="/{clean_basepath}')
+    template = template.replace('src="/', f'src="/{clean_basepath}')
+    template = template.replace('href=/', f'href=/{clean_basepath}')
+    template = template.replace('src=/', f'src=/{clean_basepath}')
 
 
     # Check if the dest_path exists and is a directory - if so, remove it
