@@ -43,7 +43,7 @@ def extract_title(markdown_file: str):
     raise Exception("No title found in markdown file: " + markdown_file)
 
 # Function that generates a webpage given a source path, template path, and destination path
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath="/"):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     source = ""
     template = ""
@@ -61,6 +61,8 @@ def generate_page(from_path, template_path, dest_path):
     # Replace the {{Title}} and {{Content}} placeholders in template.html
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", content.to_html())
+    template = template.replace('href="/', f'href="{basepath}')
+    template = template.replace('src="/', f'src="{basepath}')
 
     # Check if the dest_path exists and is a directory - if so, remove it
     if os.path.isdir(dest_path):
@@ -77,16 +79,16 @@ def generate_page(from_path, template_path, dest_path):
 
 
 # Function that recursively generates the pages from the content directory
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath="/"):
     # Get a list of all files in the content directory
     files = os.listdir(dir_path_content)
     # Generate a new .html file for every markdown file found using the template.html
     for file in files:
         if file.endswith(".md"):
-            generate_page(os.path.join(dir_path_content, file), template_path, os.path.join(dest_dir_path, file).replace(".md", ".html"))
+            generate_page(os.path.join(dir_path_content, file), template_path, os.path.join(dest_dir_path, file).replace(".md", ".html"), basepath)
 
     # Get a list of all directories in the content directory
     directories = [d for d in os.listdir(dir_path_content) if os.path.isdir(os.path.join(dir_path_content, d))]
     # Generate a new directory for every directory found
     for directory in directories:
-        generate_pages_recursive(os.path.join(dir_path_content, directory), template_path, os.path.join(dest_dir_path, directory))
+        generate_pages_recursive(os.path.join(dir_path_content, directory), template_path, os.path.join(dest_dir_path, directory), basepath)
