@@ -11,9 +11,7 @@ def main():
     
     copy_static("static", "docs")
     # Use sys.argv to grab the first CLI argument
-    if len(sys.argv) > 1:
-        basepath = sys.argv[1]
-        print(f"Basepath: {basepath}")
+    basepath = "/" if len(sys.argv) < 2 else sys.argv[1]
     generate_pages_recursive("content", "template.html", "docs", basepath)
 
 if __name__ == "__main__":

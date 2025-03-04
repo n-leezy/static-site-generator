@@ -43,7 +43,7 @@ def extract_title(markdown_file: str):
     raise Exception("No title found in markdown file: " + markdown_file)
 
 # Function that generates a webpage given a source path, template path, and destination path
-def generate_page(from_path, template_path, dest_path, basepath="/"):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     source = ""
     template = ""
@@ -79,7 +79,7 @@ def generate_page(from_path, template_path, dest_path, basepath="/"):
 
 
 # Function that recursively generates the pages from the content directory
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath="/"):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     # Get a list of all files in the content directory
     files = os.listdir(dir_path_content)
     # Generate a new .html file for every markdown file found using the template.html
